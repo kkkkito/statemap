@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Document - Cancer StateMap</title>
+  <style>
+    body { font-family: "Inter", sans-serif; margin: 20px; color: #333; line-height: 1.6; }
+    h1 { font-size: 1.6rem; color: #ff5722; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.2rem; margin-top: 1.5rem; border-left: 3px solid #ff5722; padding-left: 6px; }
+    p { margin: 0.5rem 0; }
+    code { background:#f2f2f2; padding:2px 4px; border-radius:4px; }
+    ul { margin:0.5rem 0 1rem 1.2rem; }
+    a { color: #1e88e5; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    footer { margin-top: 40px; font-size: 0.85rem; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>About This Application</h1>
+  <p><a href="/statemap/">← Back to Home</a></p>
+
+  <h2>Overview</h2>
+  <p>
+    Cancer StateMap provides an interactive workflow for analyzing DepMap dependency data.
+    The pipeline integrates dimensionality reduction, clustering, and feature visualization.
+  </p>
+
+  <h2>Dimensionality Reduction</h2>
+  <p>
+    We use <b>TriMap</b> (<code>trimap.TRIMAP(n_dims=2)</code>) to embed gene-level features
+    into a two-dimensional space. Input features (Chronos scores, expression values) are
+    standardized with <code>StandardScaler</code> before reduction.
+  </p>
+  <p>
+    TriMap preserves global structure better than t-SNE or UMAP, which is helpful when comparing
+    cell lines across multiple gene sets.
+  </p>
+
+  <h2>Clustering Analysis</h2>
+  <p>
+    Clusters are obtained using <b>Spectral Clustering</b> from scikit-learn:
+  </p>
+  <pre><code>SpectralClustering(
+    n_clusters = k,
+    affinity   = 'rbf',
+    gamma      = 5,
+    random_state = 70
+)</code></pre>
+  <p>
+    The <code>rbf</code> kernel with <code>gamma=5</code> defines similarity between cell lines
+    in the TriMap-reduced space. Cluster IDs are reordered along the x-axis of the embedding
+    for consistent visualization.
+  </p>
+
+  <h2>Feature Visualization</h2>
+  <ul>
+    <li><b>Expression:</b> log2TPM values</li>
+    <li><b>Chronos:</b> gene knockout fitness scores</li>
+    <li><b>Mutation:</b> damaging mutation status</li>
+    <li><b>PRISM:</b> compound sensitivity (AUC)</li>
+  </ul>
+  <p>
+    Features can be projected onto the TriMap embedding and compared across clusters using violin plots.
+  </p>
+
+  <h2>Downloads</h2>
+  <p>
+    Results can be exported as:
+  </p>
+  <ul>
+    <li><b>CSV:</b> Embedding + clustering assignments</li>
+    <li><b>CSV:</b> Cluster-specific features (effect size ±0.5)</li>
+    <li><b>PDF:</b> Summary report with TriMap scatter plots and per-feature distributions</li>
+  </ul>
+
+  <h2>Version Info</h2>
+  <p>Dataset: <b>DepMap 25Q2</b></p>
+
+  <footer>
+    © 2025 Cancer StateMap — Licensed under
+    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StateMap</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+  body { font-family:"Inter",sans-serif; color:#333;}
+
+  h1 { font-size:1.8rem; color:#ff5722; margin:0.2rem 0; }
+  p { margin:0; color:#666; }
+  h2 { font-size:1.2rem; margin:1rem 0 0.4rem; border-left:3px solid #ff5722; padding-left:6px; }
+
+  .loader-container {
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    height:300px; text-align:center; color:#666;
+  }
+  .loader {
+    width:50px; height:50px; border:6px solid #eee; border-top:6px solid #ff5722;
+    border-radius:50%; animation:spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  input[type=submit], button{
+    padding:6px 12px;border:0;border-radius:5px;
+    background:#ffcc3c;color:black;cursor:pointer
+  }
+  input[type=submit]:hover, button:hover{background:#e64a19}
+    footer { margin-top: 40px; font-size: 0.85rem; color: #666; text-align: center; }
+
+</style>
+
+</head>
+<body>
+  <div style="display: flex; height: 100vh;">
+    <!-- Left Panel: Forms -->
+    <div style="flex: 1; padding: 10px; overflow-y: auto;">
+      <h1 style="color: #FF4500;">Cancer StateMap</h1>
+      <p>Version: DepMap 25Q2
+      <a href="/document" target="_blank" style="margin-left:8px; color:#1e88e5; text-decoration:none;">[document]</a>
+      </p>
+      <h2>Step 1: Dimensionality Reduction</h2>
+      <!-- Add onsubmit="showLoader()" to the form -->
+      <form method="POST" action="/reduce?uid={{ uid }}" onsubmit="showLoader()">
+          <label>Chronos gene names <span style="font-size:small;">(separate by new lines)</span>:</label><br>
+          <textarea name="chr_genes" rows="3" cols="40">{% if chr_genes %}{{ chr_genes }}{% else %}
+          {% endif %}</textarea><br><br>
+          <label>Expression gene names <span style="font-size:small;">(separate by new lines)</span>:</label><br>
+          <textarea name="exp_genes" rows="3" cols="40">{% if exp_genes %}{{ exp_genes }}{% else %}
+          {% endif %}</textarea><br><br>
+          <input type="submit" value="Run Dimensionality Reduction">
+          {% if step1_done %}<span style="color:green;font-weight:bold;">Done</span>{% endif %}
+          <input type="hidden" name="uid" value="{{ uid }}">
+      </form>
+      {% if not step2_done %}
+        {% if error_message %}
+           <div style="color: red; font-weight: bold;">{{ error_message | safe }}</div>
+        {% endif %}
+      {% endif %}
+
+      {% if step1_done %}
+      <h2>Step 2: Clustering Analysis</h2>
+      <!-- Add onsubmit="showLoader()" to the form -->
+      <form method="POST" action="/cluster?uid={{ uid }}" onsubmit="showLoader()">
+          <input type="hidden" name="chr_genes" value="{{ chr_genes }}">
+          <input type="hidden" name="exp_genes" value="{{ exp_genes }}">
+          <label>Number of clusters:</label>
+          <input type="number" name="n_clusters" value="{{ n_clusters }}" min="2" max="50"><br><br>
+          <input type="submit" value="Run Clustering">
+          {% if step2_done %}<span style="color:green;font-weight:bold;">Done</span>{% endif %}
+          <input type="hidden" name="uid" value="{{ uid }}">
+      </form>
+      {% endif %}
+
+      {% if step2_done %}
+      <h2>Step 3: Feature Visualization</h2>
+      {% if error_message %}
+        <div style="color: red; font-weight: bold;">{{ error_message }}</div>
+      {% endif %}
+      <!-- Add onsubmit="showLoader()" to the form -->
+      <form method="POST" action="/feature?uid={{ uid }}" onsubmit="showLoader()">
+          <input type="hidden" name="chr_genes" value="{{ chr_genes }}">
+          <input type="hidden" name="exp_genes" value="{{ exp_genes }}">
+          <input type="hidden" name="n_clusters" value="{{ n_clusters }}">
+          <label>Gene/Compound:</label>
+          <input type="text" name="feature_gene" placeholder="" value="{% if current_gene %}{{ current_gene }}{% endif %}"><br>
+          <label>  Data type:</label>
+          <select name="feature_type">
+              <option value="Expression" {% if current_type == "Expression" %}selected{% endif %}>Expression</option>
+              <option value="Chronos" {% if current_type == "Chronos" %}selected{% endif %}>Chronos</option>
+              <option value="Mutation" {% if current_type == "Mutation" %}selected{% endif %}>Mutation</option>
+              <option value="PRISM" {% if current_type == "PRISM" %}selected{% endif %}>PRISM</option>
+          </select><br><br>
+          <input type="submit" value="Visualize Feature">
+          <input type="hidden" name="uid" value="{{ uid }}">
+      </form>
+      <form method="POST" action="/download_summary?uid={{ uid }}">
+          <input type="hidden" name="chr_genes" value="{{ chr_genes }}">
+          <input type="hidden" name="exp_genes" value="{{ exp_genes }}">
+          <input type="hidden" name="n_clusters" value="{{ n_clusters }}">
+        <button type="submit">Download Summary (PDF)</button>
+        <input type="hidden" name="uid" value="{{ uid }}">
+      </form>
+      {% endif %}
+        <footer>
+    © 2025 Cancer StateMap <br>
+    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  </footer>
+
+    </div>
+
+    <!-- Right Panel: Result -->
+    <!-- Add id="results-container" to this div -->
+    <div id="results-container" style="flex: 2; background-color: #f9f9f9; padding: 20px; overflow-y: auto;">
+      {% if step2_done %}
+        <form method="POST" action="/download_csv?uid={{ uid }}">
+          <button type="submit">Download Embedding & Clustering Data (CSV)</button>
+          <input type="hidden" name="uid" value="{{ uid }}">
+          <input type="hidden" name="chr_genes" value="{{ chr_genes }}">
+          <input type="hidden" name="exp_genes" value="{{ exp_genes }}">
+          <input type="hidden" name="n_clusters" value="{{ n_clusters }}">
+        </form>
+        <form method="POST" action="/download_feature?uid={{ uid }}">
+          <button type="submit">Download Cluster-Specific Features (CSV)</button>
+          <input type="hidden" name="uid" value="{{ uid }}">
+          <input type="hidden" name="chr_genes" value="{{ chr_genes }}">
+          <input type="hidden" name="exp_genes" value="{{ exp_genes }}">
+          <input type="hidden" name="n_clusters" value="{{ n_clusters }}">
+        </form>
+      {% endif %}
+
+      {% if plot_div_cluster and plot_div_feat %}
+        <div style="display: flex; flex-direction: row; gap: 12px; justify-content: flex-start;">
+          <div style="flex:1;">{{ plot_div_cluster|safe }}</div>
+          <div style="flex:1;">{{ plot_div_feat|safe }}</div>
+        </div>
+      {% elif plot_div %}
+        <div>{{ plot_div|safe }}</div>
+      {% endif %}
+
+      {% if image_data2 %}
+        <div style="margin-top: 24px;">
+          <h3>Distribution by Cluster</h3>
+          <img src="data:image/png;base64,{{ image_data2 }}" alt="Violin plot of feature by cluster" style="max-width: 100%;">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    // This function will be called when any of the forms are submitted.
+    function showLoader() {
+      // Find the container where the results are displayed.
+      const resultsContainer = document.getElementById('results-container');
+
+      if (resultsContainer) {
+        // Replace the content of the container with our loader HTML.
+        resultsContainer.innerHTML = `
+          <div class="loader-container">
+            <div class="loader"></div>
+            <p style="margin-top: 20px;">Processing, please wait...<br>This may take a moment.</p>
+          </div>
+        `;
+      }
+      // Return true to allow the form submission to proceed.
+      return true;
+    }
+
+  </script>
+
+</body>
+</html>
