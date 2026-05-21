@@ -3,7 +3,7 @@
 ## Overview
 This repository contains code used for analyzing data and generating figures related to **StateMAP**.
 
-To perform the StateMAP analysis, run the main notebook (Main.ipynb) or access to https://lexas.f.u-tokyo.ac.jp/statemap/
+To perform the StateMAP analysis, please access to https://lexas.f.u-tokyo.ac.jp/statemap/
 
 Notebooks used for figure generation are located in the notebook/ directory.
 
