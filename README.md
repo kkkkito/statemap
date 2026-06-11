@@ -24,7 +24,7 @@ networkx==3.2.1
 tqdm==4.67.3
 ```
 
-## Installation and usage
+## Installation and usage (5-10 minites)
 
 1. Clone this repository:
 
@@ -40,3 +40,7 @@ cd statemap
 3. Place the downloaded files in the `data/` directory.
 
 4. Run the main.ipynb
+
+## License
+
+This code is released under the MIT License. See the `LICENSE` file for details.
