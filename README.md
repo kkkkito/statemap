@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains code used to analyze data and generate figures related to **StateMap**.
+This repository provides the notebooks used to perform the StateMap analyses and generate the figures.
 
 StateMap is also available as a web application:
 https://lexas.f.u-tokyo.ac.jp/statemap/
@@ -24,7 +24,9 @@ networkx==3.2.1
 tqdm==4.67.3
 ```
 
-## Installation and usage (5-10 minites)
+## Installation and usage
+
+Typical installation time on a standard desktop computer is approximately 5–10 minutes.
 
 1. Clone this repository:
 
@@ -39,8 +41,8 @@ cd statemap
 
 3. Place the downloaded files in the `data/` directory.
 
-4. Run the main.ipynb
+4. Run `main.ipynb`.
 
 ## License
 
-This code is released under the MIT License. See the `LICENSE` file for details.
+This code is released under the MIT License.
