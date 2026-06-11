@@ -19,9 +19,10 @@ scikit-learn==1.6.1
 matplotlib==3.9.4
 seaborn==0.13.2
 trimap==1.1.5
-umap-learn==0.5.11
 networkx==3.2.1
 tqdm==4.67.3
+igraph==1.0.0
+leidenalg==0.11.0
 ```
 
 ## Installation and usage
