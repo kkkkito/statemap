@@ -38,7 +38,7 @@ cd statemap
 
 2. Create a `data/` directory and download the required data from the following link:
 
-[Google Drive - StateMap Data](https://drive.google.com/drive/folders/1VJcXN3_FH6hemraymy6BAhYu1g9wAVR6?usp=sharing)
+[Google Drive - StateMap Data](https://drive.google.com/file/d/1d3d0r0CBLz6qv7OVoCRlQdVGzKMJW5xG/view?usp=sharing)
 
 3. Place the downloaded files in the `data/` directory.
 
