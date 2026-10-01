@@ -7,7 +7,7 @@ This repository provides the notebooks used to perform the StateMap analyses and
 StateMap is also available as a web application:
 https://lexas.f.u-tokyo.ac.jp/statemap/
 
-Notebooks used for figure generation are located in the `notebook/` directory.
+Notebooks used for figure generation are located in the `notebook/` directory. To reproduce the results and figures, please use the 22Q2 DepMap release provided with the associated data files.
 
 ## Requirements
 
