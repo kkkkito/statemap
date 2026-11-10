@@ -2,6 +2,7 @@ data/
 notebooks/.ipynb_checkpoints/
 __pycache__/
 .venv/
+fig/
 venv/
 *.pyc
 result/
